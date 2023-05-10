@@ -1,0 +1,142 @@
+import pandas as pd
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.metrics import accuracy_score, f1_score
+
+# Importing data
+url = "https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.data"
+df = pd.read_csv(url, header=None)
+df.columns = ["id", "clump_thickness", "uniformity_cell_size", "uniformity_cell_shape", "marginal_adhesion",
+              "single_epithelial_cell_size", "bare_nuclei", "bland_chromatin", "normal_nucleoli", "mitoses", "class"]
+df.replace('?', -99999, inplace=True)
+df.drop(['id'], axis=1, inplace=True)
+
+# Preparing data
+X = df.drop(['class'], axis=1).astype('int64')
+y = df['class'].astype('int64')
+
+# Splitting data into train and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Defining hyperparameters to tune
+param_grid = {'penalty': ['l1', 'l2'], 'C': [0.001, 0.01, 0.1, 1, 10, 100, 1000], 'solver': ['lbfgs'], 'max_iter': [1000]}
+
+# Cross-validation using GridSearchCV
+lr = LogisticRegression()
+grid_search = GridSearchCV(lr, param_grid=param_grid, cv=5)
+grid_search.fit(X_train, y_train)
+
+# Testing the best model
+best_lr = grid_search.best_estimator_
+y_pred = best_lr.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+f1score = f1_score(y_test, y_pred, pos_label=2)
+print("Accuracy:", accuracy)
+print("F1 score:", f1score)
+
+import matplotlib.pyplot as plt
+
+# Data visualizations
+plt.hist(df['clump_thickness'], bins=10)
+plt.xlabel('Clump Thickness')
+plt.ylabel('Count')
+plt.show()
+
+plt.scatter(df['uniformity_cell_size'], df['uniformity_cell_shape'])
+plt.xlabel('Uniformity of Cell Size')
+plt.ylabel('Uniformity of Cell Shape')
+plt.show()
+
+import seaborn as sns
+
+sns.pairplot(df, hue='class')
+plt.show()
+
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Import data and select the Clump Thickness column
+df = pd.read_csv('https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.data', header=None)
+df.columns = ["id", "clump_thickness", "uniformity_cell_size", "uniformity_cell_shape", "marginal_adhesion",
+              "single_epithelial_cell_size", "bare_nuclei", "bland_chromatin", "normal_nucleoli", "mitoses", "class"]
+df.replace('?', -99999, inplace=True)
+clump_thickness = df['clump_thickness']
+
+# Plot histogram
+plt.hist(clump_thickness, bins=10)
+plt.xlabel('Clump Thickness')
+plt.ylabel('Frequency')
+plt.show()
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Import data and select the Uniformity of Cell Size column
+df = pd.read_csv('https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/')
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+# create some sample data
+actual_outcome = ['Benign', 'Malignant', 'Malignant', 'Benign', 'Benign']
+predicted_outcome = ['Benign', 'Benign', 'Malignant', 'Malignant', 'Benign']
+
+# create a dictionary to count the frequency of each outcome
+actual_counts = {outcome: actual_outcome.count(outcome) for outcome in set(actual_outcome)}
+predicted_counts = {outcome: predicted_outcome.count(outcome) for outcome in set(predicted_outcome)}
+
+# create a list of the outcomes and their corresponding counts
+outcomes = ['Benign', 'Malignant']
+actual_values = [actual_counts[outcome] for outcome in outcomes]
+predicted_values = [predicted_counts[outcome] for outcome in outcomes]
+
+# create a bar graph
+fig, ax = plt.subplots()
+x = np.arange(len(outcomes))
+width = 0.35
+ax.bar(x - width/2, actual_values, width, label='Actual')
+ax.bar(x + width/2, predicted_values, width, label='Predicted')
+
+# add labels and a legend
+ax.set_xlabel('Outcome')
+ax.set_ylabel('Frequency')
+ax.set_xticks(x)
+ax.set_xticklabels(outcomes)
+ax.legend()
+
+# display the graph
+plt.show()
+
+
+from sklearn.linear_model import LogisticRegression
+
+# create an instance of the classifier
+clf = LogisticRegression(random_state=42, solver='lbfgs', max_iter=10000)
+
+# fit the classifier to the training data
+clf.fit(X_train, y_train)
+
+# make predictions on the test data
+y_pred = clf.predict(X_test)
+
+# evaluate the accuracy of the classifier
+accuracy = clf.score(X_test, y_test)
+
+print("Accuracy:", accuracy)
+
+import pandas as pd
+
+# Load the dataset
+df = pd.read_csv("/work/breast-cancer-wisconsin.data", header=None)
+
+# Count the number of cases with missing values denoted by '?'
+missing_count = (df == '?').sum().sum()
+
+# Count the number of cases without missing values
+valid_count = df.shape[0] - missing_count
+
+print("Number of cases with missing values:", missing_count)
+print("Number of cases without missing values:", valid_count)
